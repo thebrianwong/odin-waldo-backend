@@ -2,13 +2,24 @@ import createError from "http-errors";
 import express, { NextFunction, Request, Response } from "express";
 import cookieParser from "cookie-parser";
 import logger from "morgan";
+import dotenv from "dotenv";
+import mongoose from "mongoose";
 
 import ErrorResponse from "./types/errorResponse.type.js";
 
 import indexRouter from "./routes/index.js";
 import usersRouter from "./routes/users.js";
 
+dotenv.config();
+
 const app = express();
+
+const main = async () => {
+  await mongoose.connect(process.env.MONGODB_URL!);
+  console.log("Connected to MongoDB.");
+};
+
+main().catch((err) => console.log(err));
 
 app.use(logger("dev"));
 app.use(express.json());
