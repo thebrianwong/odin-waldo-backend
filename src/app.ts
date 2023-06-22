@@ -8,7 +8,7 @@ import mongoose from "mongoose";
 import ErrorResponse from "./types/errorResponse.type.js";
 
 import pokemonLocationRouter from "./routes/pokemonLocation.js";
-import usersRouter from "./routes/users.js";
+import leaderboardRouter from "./routes/leaderboard.js";
 
 dotenv.config();
 
@@ -27,7 +27,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 app.use("/api/pokemonLocation", pokemonLocationRouter);
-app.use("/users", usersRouter);
+app.use("/api/leaderboard", leaderboardRouter);
 
 // catch 404 and forward to error handler
 app.use((req: Request, res: Response, next: NextFunction) => {
