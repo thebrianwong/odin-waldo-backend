@@ -3,7 +3,7 @@ import { getLeaderboardEntries } from "../controllers/leaderboardController";
 
 const router = express.Router();
 
-/* GET users listing. */
+// GET leaderboard sorted by best scores
 router.get("/", getLeaderboardEntries);
 
 export default router;

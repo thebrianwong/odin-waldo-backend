@@ -8,16 +8,13 @@ const getLeaderboardEntries: RequestHandler = async (req, res, next) => {
     version2: [],
     version3: [],
   };
-  await Promise.all(
-    Object.keys(leaderboardEntries).map(async (version) => {
-      const versionLeaderboardEntries: Array<LeaderboardEntry> =
-        await Leaderboard.find({ gameVersion: version }, { _id: 0, __v: 0 });
-      versionLeaderboardEntries.sort((a, b) => {
-        return a.score - b.score;
-      });
-      leaderboardEntries[version] = versionLeaderboardEntries;
-    })
-  );
+  const rawEntryData = (await Leaderboard.find({}, { _id: 0, __v: 0 }).sort({
+    score: "asc",
+  })) as Array<LeaderboardEntry>;
+  rawEntryData.forEach((entry) => {
+    leaderboardEntries[entry.gameVersion!].push(entry);
+    entry.gameVersion = undefined;
+  });
   res.send(leaderboardEntries);
 };
 
