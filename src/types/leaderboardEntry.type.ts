@@ -5,7 +5,7 @@ type LeaderboardEntry = {
   favoritePokemon: string;
   score: number;
   timeStamp: Date;
-  gameVersion: GameVersion;
+  gameVersion?: GameVersion;
 };
 
 export default LeaderboardEntry;
