@@ -8,9 +8,14 @@ const getLeaderboardEntries: RequestHandler = async (req, res, next) => {
     version2: [],
     version3: [],
   };
-  const rawEntryData = (await Leaderboard.find({}, { _id: 0, __v: 0 }).sort({
-    score: "asc",
-  })) as Array<LeaderboardEntry>;
+  const rawEntryData: Array<LeaderboardEntry> = await Leaderboard.find(
+    {},
+    { _id: 0, __v: 0 }
+  )
+    .sort({
+      score: "asc",
+    })
+    .lean();
   rawEntryData.forEach((entry) => {
     leaderboardEntries[entry.gameVersion!].push(entry);
     entry.gameVersion = undefined;
