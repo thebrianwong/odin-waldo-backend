@@ -5,10 +5,10 @@ import logger from "morgan";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 
-import ErrorResponse from "./types/errorResponse.type.js";
+import ErrorResponse from "./types/errorResponse.type";
 
-import pokemonLocationRouter from "./routes/pokemonLocation.js";
-import leaderboardRouter from "./routes/leaderboard.js";
+import pokemonLocationRouter from "./routes/pokemonLocation";
+import leaderboardRouter from "./routes/leaderboard";
 
 dotenv.config();
 
