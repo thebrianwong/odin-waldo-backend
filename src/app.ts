@@ -12,7 +12,7 @@ import leaderboardRouter from "./routes/leaderboard";
 
 dotenv.config();
 
-const app = express();
+export const app = express();
 
 const main = async () => {
   await mongoose.connect(process.env.MONGODB_URL!);
@@ -46,5 +46,3 @@ app.use(
     res.send({ message: "Invalid URL." });
   }
 );
-
-module.exports = app;
