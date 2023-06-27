@@ -3,7 +3,6 @@ import express, { NextFunction, Request, Response } from "express";
 import cookieParser from "cookie-parser";
 import logger from "morgan";
 import dotenv from "dotenv";
-import mongoose from "mongoose";
 
 import ErrorResponse from "./types/errorResponse.type";
 
@@ -14,12 +13,14 @@ dotenv.config();
 
 export const app = express();
 
-const main = async () => {
-  await mongoose.connect(process.env.MONGODB_URL!);
-  console.log("Connected to MongoDB.");
-};
+import initializeMongoServer from "./mongo/mongoTestConfig";
+import connectToRealDb from "./mongo/mongoConfig";
 
-main().catch((err) => console.log(err));
+if (process.env.TEST) {
+  initializeMongoServer();
+} else {
+  connectToRealDb();
+}
 
 app.use(logger("dev"));
 app.use(express.json());
