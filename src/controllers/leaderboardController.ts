@@ -8,24 +8,31 @@ import Leaderboard from "../models/leaderboard.model";
 import LeaderboardEntry from "../types/leaderboardEntry.type";
 
 const getLeaderboardEntries: RequestHandler = async (req, res, next) => {
-  const leaderboardEntries: { [key: string]: Array<LeaderboardEntry> } = {
-    version1: [],
-    version2: [],
-    version3: [],
-  };
-  const rawEntryData: Array<LeaderboardEntry> = await Leaderboard.find(
-    {},
-    { _id: 0, __v: 0 }
-  )
-    .sort({
-      score: "asc",
-    })
-    .lean();
-  rawEntryData.forEach((entry) => {
-    leaderboardEntries[entry.gameVersion!].push(entry);
-    entry.gameVersion = undefined;
-  });
-  res.send(leaderboardEntries);
+  try {
+    const leaderboardEntries: { [key: string]: Array<LeaderboardEntry> } = {
+      version1: [],
+      version2: [],
+      version3: [],
+    };
+    const rawEntryData: Array<LeaderboardEntry> = await Leaderboard.find(
+      {},
+      { _id: 0, __v: 0 }
+    )
+      .sort({
+        score: "asc",
+      })
+      .lean();
+    rawEntryData.forEach((entry) => {
+      leaderboardEntries[entry.gameVersion!].push(entry);
+      entry.gameVersion = undefined;
+    });
+    res.send(leaderboardEntries);
+  } catch (err) {
+    console.error(err);
+    res
+      .status(500)
+      .send({ message: `Error retrieving leaderboard data: ${err}` });
+  }
 };
 
 const validateEntryDetails = [
@@ -60,16 +67,21 @@ const saveEntryToLeaderboard: RequestHandler = async (
       message: errorMessages,
     });
   } else {
-    const leaderboardEntryDetails = {
-      name: req.body.name,
-      score: req.body.score,
-      favoritePokemon: req.body.favoritePokemon,
-      timeStamp: req.body.timeStamp,
-      gameVersion: req.body.gameVersion,
-    };
-    const leaderboardEntry = new Leaderboard(leaderboardEntryDetails);
-    await leaderboardEntry.save();
-    res.status(201).send({ success: true });
+    try {
+      const leaderboardEntryDetails = {
+        name: req.body.name,
+        score: req.body.score,
+        favoritePokemon: req.body.favoritePokemon,
+        timeStamp: req.body.timeStamp,
+        gameVersion: req.body.gameVersion,
+      };
+      const leaderboardEntry = new Leaderboard(leaderboardEntryDetails);
+      await leaderboardEntry.save();
+      res.status(201).send({ success: true });
+    } catch (err) {
+      console.error(err);
+      res.status(500).send({ message: `Error saving score: ${err}` });
+    }
   }
 };
 
