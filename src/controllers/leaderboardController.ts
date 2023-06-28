@@ -7,7 +7,7 @@ import {
 import Leaderboard from "../models/leaderboard.model";
 import LeaderboardEntry from "../types/leaderboardEntry.type";
 
-const getLeaderboardEntries: RequestHandler = async (req, res, next) => {
+const transformLeaderboardData = async () => {
   try {
     const leaderboardEntries: { [key: string]: Array<LeaderboardEntry> } = {
       version1: [],
@@ -26,12 +26,21 @@ const getLeaderboardEntries: RequestHandler = async (req, res, next) => {
       leaderboardEntries[entry.gameVersion!].push(entry);
       entry.gameVersion = undefined;
     });
+    return leaderboardEntries;
+  } catch (err) {
+    throw new Error(`Error retrieving leaderboard data: ${err}`);
+  }
+};
+
+const getLeaderboardEntries: RequestHandler = async (req, res, next) => {
+  try {
+    const leaderboardEntries: {
+      [key: string]: Array<LeaderboardEntry>;
+    } = await transformLeaderboardData();
     res.send(leaderboardEntries);
   } catch (err) {
     console.error(err);
-    res
-      .status(500)
-      .send({ message: `Error retrieving leaderboard data: ${err}` });
+    res.status(500).send({ message: err });
   }
 };
 
@@ -85,4 +94,9 @@ const saveEntryToLeaderboard: RequestHandler = async (
   }
 };
 
-export { getLeaderboardEntries, validateEntryDetails, saveEntryToLeaderboard };
+export {
+  transformLeaderboardData,
+  getLeaderboardEntries,
+  validateEntryDetails,
+  saveEntryToLeaderboard,
+};
