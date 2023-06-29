@@ -7,15 +7,23 @@ const wss = new WebSocketServer({ server });
 
 wss.on("connection", (ws) => {
   wss.on("updateLeaderboard", (data) => {
-    console.log("Listened to emitted event - received leaderboard entries.");
-    const stringJSON = JSON.stringify(data);
-    ws.send(stringJSON);
+    try {
+      console.log("Listened to emitted event - received leaderboard entries.");
+      const stringJSON = JSON.stringify(data);
+      ws.send(stringJSON);
+    } catch (err: any) {
+      throw new Error(err);
+    }
   });
 
   Leaderboard.watch().on("change", async () => {
-    console.log("Leaderboard change - querying entries - emitting event.");
-    const leaderboardData = await transformLeaderboardData();
-    wss.emit("updateLeaderboard", leaderboardData);
+    try {
+      console.log("Leaderboard change - querying entries - emitting event.");
+      const leaderboardData = await transformLeaderboardData();
+      wss.emit("updateLeaderboard", leaderboardData);
+    } catch (err: any) {
+      throw new Error(err);
+    }
   });
 });
 
