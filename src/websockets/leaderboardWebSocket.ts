@@ -1,5 +1,5 @@
 import { server } from "../index";
-import WebSocket, { WebSocketServer } from "ws";
+import { WebSocketServer } from "ws";
 import Leaderboard from "../models/leaderboard.model";
 import { transformLeaderboardData } from "../controllers/leaderboardController";
 
