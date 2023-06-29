@@ -79,7 +79,6 @@ test("submission fails with invalid/missing score, time stamp, and game version"
     })
     .expect(400)
     .expect((res) => {
-      console.log(res.body);
       expect(res.body).toMatchObject({
         success: false,
         message: {
