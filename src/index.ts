@@ -1,6 +1,7 @@
 import { app } from "./app";
 const debug = require("debug")("odin-waldo-backend:server");
 import http from "http";
+import createWebSocketServer from "./websockets/leaderboardWebSocket";
 
 /**
  * Get port from environment and store in Express.
@@ -13,14 +14,13 @@ app.set("port", port);
  * Create HTTP server.
  */
 
-export const server = http.createServer(app);
+const server = http.createServer(app);
 
 /**
  * Create WebSocket server.
  */
 
-import webSocket from "./websockets/leaderboardWebSocket";
-const webSocketInstance = webSocket;
+createWebSocketServer(server);
 
 /**
  * Listen on provided port, on all network interfaces.
