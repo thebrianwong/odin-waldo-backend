@@ -1,8 +1,8 @@
 import mongoose from "mongoose";
-import { MongoMemoryServer } from "mongodb-memory-server";
+import { MongoMemoryReplSet } from "mongodb-memory-server";
 
 const initializeMongoServer = async () => {
-  const mongoServer = await MongoMemoryServer.create();
+  const mongoServer = await MongoMemoryReplSet.create();
   const mongoUri = mongoServer.getUri();
 
   mongoose.connect(mongoUri);
