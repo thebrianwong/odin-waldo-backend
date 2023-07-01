@@ -5,16 +5,20 @@ import {
   validationResult,
 } from "express-validator";
 import Leaderboard from "../models/leaderboard.model";
-import LeaderboardEntry from "../types/leaderboardEntry.type";
+import {
+  RawLeaderboardEntry,
+  ParsedLeaderboardEntry,
+} from "../types/leaderboardEntry.type";
 
 const transformLeaderboardData = async () => {
   try {
-    const leaderboardEntries: { [key: string]: Array<LeaderboardEntry> } = {
-      version1: [],
-      version2: [],
-      version3: [],
-    };
-    const rawEntryData: Array<LeaderboardEntry> = await Leaderboard.find(
+    const leaderboardEntries: { [key: string]: Array<ParsedLeaderboardEntry> } =
+      {
+        version1: [],
+        version2: [],
+        version3: [],
+      };
+    const rawEntryData: Array<RawLeaderboardEntry> = await Leaderboard.find(
       {},
       { _id: 0, __v: 0 }
     )
@@ -22,9 +26,13 @@ const transformLeaderboardData = async () => {
         score: "asc",
       })
       .lean();
-    rawEntryData.forEach((entry) => {
-      leaderboardEntries[entry.gameVersion!].push(entry);
-      entry.gameVersion = undefined;
+    rawEntryData.forEach((rawEntry) => {
+      const parsedEntry: ParsedLeaderboardEntry = {
+        ...rawEntry,
+        timeStamp: rawEntry.timeStamp.toDateString(),
+        gameVersion: undefined,
+      };
+      leaderboardEntries[rawEntry.gameVersion!].push(parsedEntry);
     });
     return leaderboardEntries;
   } catch (err) {
@@ -35,7 +43,7 @@ const transformLeaderboardData = async () => {
 const getLeaderboardEntries: RequestHandler = async (req, res, next) => {
   try {
     const leaderboardEntries: {
-      [key: string]: Array<LeaderboardEntry>;
+      [key: string]: Array<ParsedLeaderboardEntry>;
     } = await transformLeaderboardData();
     res.send(leaderboardEntries);
   } catch (err) {
