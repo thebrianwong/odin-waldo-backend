@@ -3,6 +3,7 @@ import express, { NextFunction, Request, Response } from "express";
 import cookieParser from "cookie-parser";
 import logger from "morgan";
 import dotenv from "dotenv";
+import cors from "cors";
 
 import ErrorResponse from "./types/errorResponse.type";
 
@@ -26,6 +27,11 @@ app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(
+  cors({
+    origin: process.env.WALDO_FRONTEND,
+  })
+);
 
 app.use("/api/pokemonLocation", pokemonLocationRouter);
 app.use("/api/leaderboard", leaderboardRouter);
