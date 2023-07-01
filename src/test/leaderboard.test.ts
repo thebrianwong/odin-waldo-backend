@@ -1,5 +1,10 @@
 import request from "supertest";
 import { app } from "../app";
+import Leaderboard from "../models/leaderboard.model";
+
+afterEach(async () => {
+  await Leaderboard.deleteMany({});
+});
 
 test("return leaderboard entries data as JSON", (done) => {
   request(app)

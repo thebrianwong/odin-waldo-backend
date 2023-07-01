@@ -5,11 +5,9 @@ import { Server } from "http";
 
 const createWebSocketServer = (server: Server) => {
   const wss = new WebSocketServer({ server });
-  console.log("connecting to ws");
+
   wss.on("connection", (ws) => {
-    console.log("the thing!");
     wss.on("updateLeaderboard", (data) => {
-      console.log("llpl");
       try {
         console.log(
           "Listened to emitted event - received leaderboard entries."
@@ -22,7 +20,6 @@ const createWebSocketServer = (server: Server) => {
     });
 
     Leaderboard.watch().on("change", async () => {
-      console.log("TRIGGERED");
       try {
         console.log("Leaderboard change - querying entries - emitting event.");
         const leaderboardData = await transformLeaderboardData();
