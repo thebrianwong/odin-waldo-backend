@@ -4,6 +4,8 @@ import cookieParser from "cookie-parser";
 import logger from "morgan";
 import dotenv from "dotenv";
 import cors from "cors";
+import compression from "compression";
+import helmet from "helmet";
 
 import ErrorResponse from "./types/errorResponse.type";
 
@@ -32,6 +34,8 @@ app.use(
     origin: process.env.WALDO_FRONTEND,
   })
 );
+app.use(compression());
+app.use(helmet());
 
 app.use("/api/pokemonLocation", pokemonLocationRouter);
 app.use("/api/leaderboard", leaderboardRouter);
