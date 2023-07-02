@@ -86,11 +86,11 @@ test("submission fails with invalid/missing score, time stamp, and game version"
     .expect((res) => {
       expect(res.body).toMatchObject({
         success: false,
-        message: {
-          score: "Your submission must include a score.",
-          timeStamp: "Your submission must include a valid date.",
-          gameVersion: "Your submission must include a valid game version.",
-        },
+        message: [
+          "Your submission must include a score.",
+          "Your submission must include a valid date.",
+          "Your submission must include a valid game version.",
+        ],
       });
     })
     .then(() => {

@@ -75,9 +75,9 @@ const saveEntryToLeaderboard: RequestHandler = async (
 ) => {
   const errors = validationResult(req);
   if (errors.array().length) {
-    const errorMessages: { [key: string]: string } = {};
+    const errorMessages: Array<string> = [];
     errors.array({ onlyFirstError: true }).map((error) => {
-      errorMessages[(error as FieldValidationError).path] = error.msg;
+      errorMessages.push(error.msg);
     });
     res.status(400).send({
       success: false,
