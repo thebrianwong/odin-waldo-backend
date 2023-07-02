@@ -97,7 +97,9 @@ const saveEntryToLeaderboard: RequestHandler = async (
       res.status(201).send({ success: true });
     } catch (err) {
       console.error(err);
-      res.status(500).send({ message: `Error saving score: ${err}` });
+      res
+        .status(500)
+        .send({ success: false, message: `Error saving score: ${err}` });
     }
   }
 };
