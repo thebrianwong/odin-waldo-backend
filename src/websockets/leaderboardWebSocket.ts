@@ -6,28 +6,45 @@ import { Server } from "http";
 const createWebSocketServer = (server: Server) => {
   const wss = new WebSocketServer({ server });
 
-  wss.on("connection", (ws) => {
-    wss.on("updateLeaderboard", (data) => {
+  wss.on("connection", () => {
+    console.log("New websocket client connection.");
+  });
+  wss.on("updateLeaderboard", (data) => {
+    console.log("Listened to emitted event - sending leaderboard entries.");
+    wss.clients.forEach((client) => {
       try {
-        console.log(
-          "Listened to emitted event - received leaderboard entries."
-        );
         const stringJSON = JSON.stringify(data);
-        ws.send(stringJSON);
-      } catch (err: any) {
-        throw new Error(err);
+        client.send(stringJSON);
+      } catch (err: unknown) {
+        if (typeof err === "string") {
+          throw new Error(err);
+        } else if (err instanceof Error) {
+          throw new Error(err.message);
+        } else {
+          console.error(
+            "Something went horribly wrong! Please refresh the page or try again later."
+          );
+        }
       }
     });
+  });
 
-    Leaderboard.watch().on("change", async () => {
-      try {
-        console.log("Leaderboard change - querying entries - emitting event.");
-        const leaderboardData = await transformLeaderboardData();
-        wss.emit("updateLeaderboard", leaderboardData);
-      } catch (err: any) {
+  Leaderboard.watch().on("change", async () => {
+    try {
+      console.log("Leaderboard change - querying entries - emitting event.");
+      const leaderboardData = await transformLeaderboardData();
+      wss.emit("updateLeaderboard", leaderboardData);
+    } catch (err: unknown) {
+      if (typeof err === "string") {
         throw new Error(err);
+      } else if (err instanceof Error) {
+        throw new Error(err.message);
+      } else {
+        console.error(
+          "Something went horribly wrong! Please refresh the page or try again later."
+        );
       }
-    });
+    }
   });
 };
 
