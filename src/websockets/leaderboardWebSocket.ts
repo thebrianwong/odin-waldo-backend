@@ -13,8 +13,7 @@ const createWebSocketServer = (server: Server) => {
     console.log("Listened to emitted event - sending leaderboard entries.");
     wss.clients.forEach((client) => {
       try {
-        const stringJSON = JSON.stringify(data);
-        client.send(stringJSON);
+        client.send(data);
       } catch (err: unknown) {
         if (typeof err === "string") {
           throw new Error(err);
@@ -33,7 +32,7 @@ const createWebSocketServer = (server: Server) => {
     try {
       console.log("Leaderboard change - querying entries - emitting event.");
       const leaderboardData = await transformLeaderboardData();
-      wss.emit("updateLeaderboard", leaderboardData);
+      wss.emit("updateLeaderboard", JSON.stringify(leaderboardData));
     } catch (err: unknown) {
       if (typeof err === "string") {
         throw new Error(err);
