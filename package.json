@@ -3,9 +3,10 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "tsc && node ./dist/index.js",
+    "start": "node ./dist/index.js",
     "dev": "nodemon ./dist/index.js",
-    "test": "TEST='true' jest --watchAll --detectOpenHandles"
+    "test": "TEST='true' jest --watchAll --detectOpenHandles",
+    "deploy": "npm install && npm install -g typescript && tsc"
   },
   "dependencies": {
     "compression": "^1.7.4",
