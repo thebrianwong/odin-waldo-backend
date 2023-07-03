@@ -6,7 +6,7 @@
     "start": "node ./dist/index.js",
     "dev": "nodemon ./dist/index.js",
     "test": "TEST='true' jest --watchAll --detectOpenHandles",
-    "build": "npm install && npm install typescript && npx tsc"
+    "build": "npm install && tsc"
   },
   "dependencies": {
     "compression": "^1.7.4",
