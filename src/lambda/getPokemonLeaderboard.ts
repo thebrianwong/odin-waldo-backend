@@ -6,7 +6,7 @@ import {
 import { unmarshall } from "@aws-sdk/util-dynamodb";
 import LeaderboardEntry from "../types/leaderboardEntry.type";
 
-export const getPokemonLeaderboard = async (_event: any) => {
+export const getPokemonLeaderboard = async () => {
   const client = new DynamoDBClient();
   const input: ScanInput = {
     TableName: "pokemon-waldo",
