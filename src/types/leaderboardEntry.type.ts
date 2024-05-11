@@ -4,15 +4,10 @@ type LeaderboardEntry = {
   name: string;
   favoritePokemon: string;
   score: number;
-  gameVersion?: GameVersion;
+  gameVersion: GameVersion;
+  timeStamp: number;
+  type: "leaderboard";
+  id: string;
 };
 
-type RawLeaderboardEntry = LeaderboardEntry & {
-  timeStamp: Date;
-};
-
-type ParsedLeaderboardEntry = LeaderboardEntry & {
-  timeStamp: string;
-};
-
-export { RawLeaderboardEntry, ParsedLeaderboardEntry };
+export default LeaderboardEntry;
