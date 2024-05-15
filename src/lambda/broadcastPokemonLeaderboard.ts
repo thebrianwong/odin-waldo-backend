@@ -4,6 +4,12 @@ import {
   InvokeCommand,
   InvokeCommandInputType,
 } from "@aws-sdk/client-lambda";
+import {
+  DynamoDBClient,
+  ScanCommand,
+  ScanInput,
+} from "@aws-sdk/client-dynamodb";
+import { unmarshall } from "@aws-sdk/util-dynamodb";
 
 export const broadcastPokemonLeaderboard: Handler = async (event) => {
   // call lambda to get leaderboard
@@ -19,5 +25,27 @@ export const broadcastPokemonLeaderboard: Handler = async (event) => {
     rawLambdaResponse.Payload?.transformToString()!
   );
 
-  return leaderboardData;
+  const dynamoClient = new DynamoDBClient();
+  const dynamoInput: ScanInput = {
+    TableName: "pokemon-waldo",
+    ExpressionAttributeNames: {
+      "#T": "type",
+    },
+    ExpressionAttributeValues: {
+      ":type": {
+        S: "websocketID",
+      },
+    },
+    FilterExpression: "#T = :type",
+  };
+
+  const dynamoCommand = new ScanCommand(dynamoInput);
+  const dynamoResponse = await dynamoClient.send(dynamoCommand);
+
+  dynamoResponse.Items?.forEach((rawData) => {
+    const parsedData = unmarshall(rawData);
+    const wsId = parsedData.id;
+  });
+
+  return dynamoResponse;
 };
