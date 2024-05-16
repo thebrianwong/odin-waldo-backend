@@ -9,21 +9,21 @@ import {
   ScanCommand,
   ScanInput,
 } from "@aws-sdk/client-dynamodb";
+import {
+  ApiGatewayManagementApiClient,
+  PostToConnectionCommand,
+  PostToConnectionCommandInput,
+} from "@aws-sdk/client-apigatewaymanagementapi";
 import { unmarshall } from "@aws-sdk/util-dynamodb";
 
 export const broadcastPokemonLeaderboard: Handler = async (event) => {
-  // call lambda to get leaderboard
-  // query dynamodb to get all ws connection ids
-  // send leadrboard to each ws connection
   const lambdaClient = new LambdaClient();
   const lambdaInput: InvokeCommandInputType = {
     FunctionName: "getPokemonLeaderboard",
   };
   const lambdaCommand = new InvokeCommand(lambdaInput);
   const rawLambdaResponse = await lambdaClient.send(lambdaCommand);
-  const leaderboardData = JSON.parse(
-    rawLambdaResponse.Payload?.transformToString()!
-  );
+  const leaderboardData = rawLambdaResponse.Payload;
 
   const dynamoClient = new DynamoDBClient();
   const dynamoInput: ScanInput = {
@@ -38,13 +38,21 @@ export const broadcastPokemonLeaderboard: Handler = async (event) => {
     },
     FilterExpression: "#T = :type",
   };
-
   const dynamoCommand = new ScanCommand(dynamoInput);
   const dynamoResponse = await dynamoClient.send(dynamoCommand);
 
-  dynamoResponse.Items?.forEach((rawData) => {
+  const apiGWClient = new ApiGatewayManagementApiClient({
+    endpoint: process.env.API_GATEWAY_WS_URL,
+  });
+  dynamoResponse.Items?.forEach(async (rawData) => {
     const parsedData = unmarshall(rawData);
     const wsId = parsedData.id;
+    const apiGWInput: PostToConnectionCommandInput = {
+      ConnectionId: wsId,
+      Data: leaderboardData!,
+    };
+    const apiGWCommand = new PostToConnectionCommand(apiGWInput);
+    await apiGWClient.send(apiGWCommand);
   });
 
   return dynamoResponse;
