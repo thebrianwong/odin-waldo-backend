@@ -1,9 +1,7 @@
 import GameVersion from "./gameVersion.type";
+import LeaderboardBase from "./leaderboardBase.type";
 
-type LeaderboardPayload = {
-  name: string;
-  favoritePokemon: string;
-  score: number;
+type LeaderboardPayload = LeaderboardBase & {
   gameVersion: GameVersion;
 };
 

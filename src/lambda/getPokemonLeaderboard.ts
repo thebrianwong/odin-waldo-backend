@@ -4,7 +4,8 @@ import {
   ScanInput,
 } from "@aws-sdk/client-dynamodb";
 import { unmarshall } from "@aws-sdk/util-dynamodb";
-import LeaderboardEntry from "../types/leaderboardEntry.type";
+import LeaderboardRawData from "../types/leaderboardRawData.type";
+import LeaderboardParsedData from "../types/leaderboardParsedData.type";
 
 export const getPokemonLeaderboard = async () => {
   const client = new DynamoDBClient();
@@ -24,15 +25,21 @@ export const getPokemonLeaderboard = async () => {
   const command = new ScanCommand(input);
   const response = await client.send(command);
 
-  const leaderboardData: { [key: string]: Array<LeaderboardEntry> } = {
+  const leaderboardData: { [key: string]: Array<LeaderboardParsedData> } = {
     version1: [],
     version2: [],
     version3: [],
   };
 
   response.Items?.forEach((item) => {
-    const parsedItem = unmarshall(item) as LeaderboardEntry;
-    leaderboardData[parsedItem.gameVersion].push(parsedItem);
+    const parsedItem = unmarshall(item) as LeaderboardRawData;
+    const formattedItem = {
+      favoritePokemon: parsedItem.favoritePokemon,
+      name: parsedItem.name,
+      score: parsedItem.score,
+      timeStamp: parsedItem.timeStamp,
+    };
+    leaderboardData[parsedItem.gameVersion].push(formattedItem);
   });
 
   Object.keys(leaderboardData).forEach((version) => {

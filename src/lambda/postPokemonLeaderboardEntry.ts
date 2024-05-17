@@ -4,7 +4,7 @@ import {
   PutItemCommandInput,
 } from "@aws-sdk/client-dynamodb";
 import { Handler } from "aws-lambda";
-import LeaderboardPayload from "../types/leaderboardPayload";
+import LeaderboardPayload from "../types/leaderboardPayload.type";
 
 export const postPokemonLeaderboardEntry: Handler = async (event) => {
   const payload: LeaderboardPayload = event.body;
