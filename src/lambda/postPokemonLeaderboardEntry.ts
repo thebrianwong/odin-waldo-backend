@@ -8,7 +8,7 @@ import LeaderboardPayload from "../types/leaderboardPayload.type";
 
 export const postPokemonLeaderboardEntry: Handler = async (event) => {
   try {
-    const payload: LeaderboardPayload = event.body;
+    const payload: LeaderboardPayload = event;
 
     const client = new DynamoDBClient();
     const input: PutItemCommandInput = {
