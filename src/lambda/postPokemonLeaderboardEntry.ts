@@ -7,38 +7,44 @@ import { Handler } from "aws-lambda";
 import LeaderboardPayload from "../types/leaderboardPayload.type";
 
 export const postPokemonLeaderboardEntry: Handler = async (event) => {
-  const payload: LeaderboardPayload = event.body;
+  try {
+    const payload: LeaderboardPayload = event.body;
 
-  const client = new DynamoDBClient();
-  const input: PutItemCommandInput = {
-    TableName: "pokemon-waldo",
-    Item: {
-      id: {
-        S: crypto.randomUUID(),
+    const client = new DynamoDBClient();
+    const input: PutItemCommandInput = {
+      TableName: "pokemon-waldo",
+      Item: {
+        id: {
+          S: crypto.randomUUID(),
+        },
+        favoritePokemon: {
+          S: payload.favoritePokemon,
+        },
+        gameVersion: {
+          S: payload.gameVersion,
+        },
+        name: {
+          S: payload.name,
+        },
+        score: {
+          N: String(payload.score),
+        },
+        timeStamp: {
+          N: String(Date.now()),
+        },
+        type: {
+          S: "leaderboard",
+        },
       },
-      favoritePokemon: {
-        S: payload.favoritePokemon,
-      },
-      gameVersion: {
-        S: payload.gameVersion,
-      },
-      name: {
-        S: payload.name,
-      },
-      score: {
-        N: String(payload.score),
-      },
-      timeStamp: {
-        N: String(Date.now()),
-      },
-      type: {
-        S: "leaderboard",
-      },
-    },
-  };
+    };
 
-  const command = new PutItemCommand(input);
-  const response = await client.send(command);
+    const command = new PutItemCommand(input);
+    await client.send(command);
 
-  return response;
+    return {
+      message: "New leaderboard entry successfully inserted into DynamoDB.",
+    };
+  } catch (error) {
+    throw Error(error as string);
+  }
 };
