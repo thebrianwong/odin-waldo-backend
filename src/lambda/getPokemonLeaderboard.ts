@@ -8,22 +8,23 @@ import LeaderboardRawData from "../types/leaderboardRawData.type";
 import LeaderboardParsedData from "../types/leaderboardParsedData.type";
 
 export const getPokemonLeaderboard = async () => {
-  const client = new DynamoDBClient();
-  const input: ScanInput = {
-    TableName: "pokemon-waldo",
-    ExpressionAttributeNames: {
-      "#T": "type",
-    },
-    ExpressionAttributeValues: {
-      ":type": {
-        S: "leaderboard",
-      },
-    },
-    FilterExpression: "#T = :type",
-  };
-  const command = new ScanCommand(input);
   try {
+    const client = new DynamoDBClient();
+    const input: ScanInput = {
+      TableName: "pokemon-waldo",
+      ExpressionAttributeNames: {
+        "#T": "type",
+      },
+      ExpressionAttributeValues: {
+        ":type": {
+          S: "leaderboard",
+        },
+      },
+      FilterExpression: "#T = :type",
+    };
+    const command = new ScanCommand(input);
     const response = await client.send(command);
+
     const leaderboardData: { [key: string]: Array<LeaderboardParsedData> } = {
       version1: [],
       version2: [],
@@ -47,11 +48,6 @@ export const getPokemonLeaderboard = async () => {
 
     return leaderboardData;
   } catch (error) {
-    return {
-      statusCode: 500,
-      error,
-      message:
-        "There was an error while querying DynamoDB for leaderboard entries.",
-    };
+    throw Error(error as string);
   }
 };
