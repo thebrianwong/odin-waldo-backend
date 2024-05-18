@@ -21,30 +21,37 @@ export const getPokemonLeaderboard = async () => {
     },
     FilterExpression: "#T = :type",
   };
-
   const command = new ScanCommand(input);
-  const response = await client.send(command);
-
-  const leaderboardData: { [key: string]: Array<LeaderboardParsedData> } = {
-    version1: [],
-    version2: [],
-    version3: [],
-  };
-
-  response.Items?.forEach((item) => {
-    const parsedItem = unmarshall(item) as LeaderboardRawData;
-    const formattedItem = {
-      favoritePokemon: parsedItem.favoritePokemon,
-      name: parsedItem.name,
-      score: parsedItem.score,
-      timeStamp: parsedItem.timeStamp,
+  try {
+    const response = await client.send(command);
+    const leaderboardData: { [key: string]: Array<LeaderboardParsedData> } = {
+      version1: [],
+      version2: [],
+      version3: [],
     };
-    leaderboardData[parsedItem.gameVersion].push(formattedItem);
-  });
 
-  Object.keys(leaderboardData).forEach((version) => {
-    leaderboardData[version].sort((a, b) => a.score - b.score);
-  });
+    response.Items?.forEach((item) => {
+      const parsedItem = unmarshall(item) as LeaderboardRawData;
+      const formattedItem = {
+        favoritePokemon: parsedItem.favoritePokemon,
+        name: parsedItem.name,
+        score: parsedItem.score,
+        timeStamp: parsedItem.timeStamp,
+      };
+      leaderboardData[parsedItem.gameVersion].push(formattedItem);
+    });
 
-  return leaderboardData;
+    Object.keys(leaderboardData).forEach((version) => {
+      leaderboardData[version].sort((a, b) => a.score - b.score);
+    });
+
+    return leaderboardData;
+  } catch (error) {
+    return {
+      statusCode: 500,
+      error,
+      message:
+        "There was an error while querying DynamoDB for leaderboard entries.",
+    };
+  }
 };
