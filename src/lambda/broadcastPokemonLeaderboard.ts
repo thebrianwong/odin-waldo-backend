@@ -56,7 +56,9 @@ export const broadcastPokemonLeaderboard: Handler = async () => {
       await apiGWClient.send(apiGWCommand);
     });
 
-    return dynamoResponse;
+    return {
+      message: "Successfully broadcasted to all active WebSocket clients.",
+    };
   } catch (error) {
     throw Error(error as string);
   }
