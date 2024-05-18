@@ -16,7 +16,7 @@ import {
 } from "@aws-sdk/client-apigatewaymanagementapi";
 import { unmarshall } from "@aws-sdk/util-dynamodb";
 
-export const broadcastPokemonLeaderboard: Handler = async (event) => {
+export const broadcastPokemonLeaderboard: Handler = async () => {
   const lambdaClient = new LambdaClient();
   const lambdaInput: InvokeCommandInputType = {
     FunctionName: "getPokemonLeaderboard",
