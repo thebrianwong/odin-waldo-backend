@@ -18,13 +18,13 @@ export const postPokemonLeaderboardEntry: Handler = async (event) => {
           S: crypto.randomUUID(),
         },
         favoritePokemon: {
-          S: payload.favoritePokemon,
+          S: payload.favoritePokemon || "Missingno",
         },
         gameVersion: {
           S: payload.gameVersion,
         },
         name: {
-          S: payload.name,
+          S: payload.name || "Anonymous Trainer",
         },
         score: {
           N: String(payload.score),
