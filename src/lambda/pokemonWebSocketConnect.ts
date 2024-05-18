@@ -6,21 +6,27 @@ import {
 import { Handler } from "aws-lambda";
 
 export const addWebSocketConnectionID: Handler = async (event) => {
-  const client = new DynamoDBClient();
-  const input: PutItemCommandInput = {
-    TableName: "pokemon-waldo",
-    Item: {
-      id: {
-        S: event.requestContext.connectionId,
-      },
-      type: {
-        S: "websocketID",
-      },
-    },
-  };
+  try {
+    const connectionID = event.requestContext.connectionId;
 
-  const command = new PutItemCommand(input);
-  await client.send(command);
+    const client = new DynamoDBClient();
+    const input: PutItemCommandInput = {
+      TableName: "pokemon-waldo",
+      Item: {
+        id: {
+          S: connectionID,
+        },
+        type: {
+          S: "websocketID",
+        },
+      },
+    };
 
-  return { statusCode: 201 };
+    const command = new PutItemCommand(input);
+    await client.send(command);
+
+    return { statusCode: 201 };
+  } catch (error) {
+    throw Error(error as string);
+  }
 };

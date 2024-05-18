@@ -6,18 +6,24 @@ import {
 import { Handler } from "aws-lambda";
 
 export const deleteWebSocketConnectionID: Handler = async (event) => {
-  const client = new DynamoDBClient();
-  const input: DeleteItemCommandInput = {
-    TableName: "pokemon-waldo",
-    Key: {
-      id: {
-        S: event.requestContext.connectionId,
+  try {
+    const connectionID = event.requestContext.connectionId;
+
+    const client = new DynamoDBClient();
+    const input: DeleteItemCommandInput = {
+      TableName: "pokemon-waldo",
+      Key: {
+        id: {
+          S: connectionID,
+        },
       },
-    },
-  };
+    };
 
-  const command = new DeleteItemCommand(input);
-  await client.send(command);
+    const command = new DeleteItemCommand(input);
+    await client.send(command);
 
-  return { statusCode: 204 };
+    return { statusCode: 204 };
+  } catch (error) {
+    throw Error(error as string);
+  }
 };
