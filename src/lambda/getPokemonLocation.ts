@@ -6,9 +6,10 @@ import {
 import { unmarshall } from "@aws-sdk/util-dynamodb";
 import PokemonLocationData from "../types/pokemonLocationData.type";
 
+const client = new DynamoDBClient();
+
 export const getPokemonLocation = async () => {
   try {
-    const client = new DynamoDBClient();
     const input: ScanInput = {
       TableName: "pokemon-waldo",
       ExpressionAttributeNames: {

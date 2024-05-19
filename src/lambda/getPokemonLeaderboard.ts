@@ -7,9 +7,10 @@ import { unmarshall } from "@aws-sdk/util-dynamodb";
 import LeaderboardRawData from "../types/leaderboardRawData.type";
 import LeaderboardParsedData from "../types/leaderboardParsedData.type";
 
+const client = new DynamoDBClient();
+
 export const getPokemonLeaderboard = async () => {
   try {
-    const client = new DynamoDBClient();
     const input: ScanInput = {
       TableName: "pokemon-waldo",
       ExpressionAttributeNames: {

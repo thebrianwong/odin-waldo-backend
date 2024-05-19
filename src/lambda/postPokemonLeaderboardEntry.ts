@@ -6,11 +6,12 @@ import {
 import { Handler } from "aws-lambda";
 import LeaderboardPayload from "../types/leaderboardPayload.type";
 
+const client = new DynamoDBClient();
+
 export const postPokemonLeaderboardEntry: Handler = async (event) => {
   try {
     const payload: LeaderboardPayload = event;
 
-    const client = new DynamoDBClient();
     const input: PutItemCommandInput = {
       TableName: "pokemon-waldo",
       Item: {

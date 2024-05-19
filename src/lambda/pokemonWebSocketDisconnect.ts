@@ -5,11 +5,12 @@ import {
 } from "@aws-sdk/client-dynamodb";
 import { Handler } from "aws-lambda";
 
+const client = new DynamoDBClient();
+
 export const deleteWebSocketConnectionID: Handler = async (event) => {
   try {
     const connectionID = event.requestContext.connectionId;
 
-    const client = new DynamoDBClient();
     const input: DeleteItemCommandInput = {
       TableName: "pokemon-waldo",
       Key: {

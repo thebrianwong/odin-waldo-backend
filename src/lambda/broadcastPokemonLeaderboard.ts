@@ -16,9 +16,14 @@ import {
 } from "@aws-sdk/client-apigatewaymanagementapi";
 import { unmarshall } from "@aws-sdk/util-dynamodb";
 
+const lambdaClient = new LambdaClient();
+const dynamoClient = new DynamoDBClient();
+const apiGWClient = new ApiGatewayManagementApiClient({
+  endpoint: process.env.API_GATEWAY_WS_URL,
+});
+
 export const broadcastPokemonLeaderboard: Handler = async () => {
   try {
-    const lambdaClient = new LambdaClient();
     const lambdaInput: InvokeCommandInputType = {
       FunctionName: "getPokemonLeaderboard",
     };
@@ -26,7 +31,6 @@ export const broadcastPokemonLeaderboard: Handler = async () => {
     const rawLambdaResponse = await lambdaClient.send(lambdaCommand);
     const leaderboardData = rawLambdaResponse.Payload;
 
-    const dynamoClient = new DynamoDBClient();
     const dynamoInput: ScanInput = {
       TableName: "pokemon-waldo",
       ExpressionAttributeNames: {
@@ -42,9 +46,6 @@ export const broadcastPokemonLeaderboard: Handler = async () => {
     const dynamoCommand = new ScanCommand(dynamoInput);
     const dynamoResponse = await dynamoClient.send(dynamoCommand);
 
-    const apiGWClient = new ApiGatewayManagementApiClient({
-      endpoint: process.env.API_GATEWAY_WS_URL,
-    });
     dynamoResponse.Items?.forEach(async (rawData) => {
       const parsedData = unmarshall(rawData);
       const wsId = parsedData.id;
