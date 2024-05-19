@@ -8,6 +8,8 @@ import {
   DynamoDBClient,
   ScanCommand,
   ScanInput,
+  DeleteItemCommand,
+  DeleteItemInput,
 } from "@aws-sdk/client-dynamodb";
 import {
   ApiGatewayManagementApiClient,
@@ -54,9 +56,25 @@ export const broadcastPokemonLeaderboard: Handler = async () => {
         Data: leaderboardData!,
       };
       const apiGWCommand = new PostToConnectionCommand(apiGWInput);
-      await apiGWClient.send(apiGWCommand);
-    });
+      try {
+        await apiGWClient.send(apiGWCommand);
+      } catch (error) {
+        console.log(
+          `Connection ID ${wsId} is inactive and was not properly deleted. Deleting now.`
+        );
 
+        const deleteItemInput: DeleteItemInput = {
+          TableName: "pokemon-waldo",
+          Key: {
+            id: {
+              S: wsId,
+            },
+          },
+        };
+        const deleteCommand = new DeleteItemCommand(deleteItemInput);
+        await dynamoClient.send(deleteCommand);
+      }
+    });
     return {
       message: "Successfully broadcasted to all active WebSocket clients.",
     };
