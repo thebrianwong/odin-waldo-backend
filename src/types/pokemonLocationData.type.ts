@@ -1,6 +1,6 @@
 import GameVersion from "./gameVersion.type";
 
-type DatabasePokemonLocationData = {
+type PokemonLocationData = {
   gameVersion: GameVersion;
   data: {
     [key: string]: {
@@ -12,15 +12,4 @@ type DatabasePokemonLocationData = {
   };
 };
 
-type APIPokemonLocationData = {
-  [key: string]: {
-    [key: string]: {
-      maximumX: number;
-      maximumY: number;
-      minimumX: number;
-      minimumY: number;
-    };
-  };
-};
-
-export { DatabasePokemonLocationData, APIPokemonLocationData };
+export default PokemonLocationData;
