@@ -43,6 +43,7 @@ export const postPokemonLeaderboardEntry: Handler = async (event) => {
     await client.send(command);
 
     return {
+      success: true,
       message: "New leaderboard entry successfully inserted into DynamoDB.",
     };
   } catch (error) {
